@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -18,7 +17,6 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -38,7 +36,20 @@
             "backgroundColor": "#0a1730"
           }
         }
-      ]
+      ],
+      "expo-asset",
+      "expo-audio",
+      "expo-build-properties",
+      "expo-font",
+      "expo-image",
+      "expo-localization",
+      "expo-mail-composer",
+      "expo-maps",
+      "expo-secure-store",
+      "expo-sharing",
+      "expo-sqlite",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
