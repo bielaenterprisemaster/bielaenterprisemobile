@@ -31,36 +31,27 @@ const TableFooterContext = createContext<{
   isFooterRow: false,
 });
 
+// React 19: `ref` is an ordinary prop, so each part passes its element's own
+// props (ref included) straight through. React.forwardRef with a generic ref
+// type no longer type-checks against React Native 0.88's strict ref types.
 type ITableProps = React.ComponentProps<typeof ExpoTable>;
 type ITableHeaderProps = React.ComponentProps<typeof ExpoTHead>;
 type ITableBodyProps = React.ComponentProps<typeof ExpoTBody>;
 type ITableFooterProps = React.ComponentProps<typeof ExpoTFoot>;
-type ITableHeadProps = React.ComponentProps<typeof View | typeof Text> & {
-  useRNView?: boolean;
-};
 type ITableRowProps = React.ComponentProps<typeof ExpoTR>;
-type ITableDataProps = React.ComponentProps<typeof View | typeof Text> & {
-  useRNView?: boolean;
-};
 type ITableCaptionProps = React.ComponentProps<typeof ExpoTCaption>;
+/** A cell is a Text by default, or a View with `useRNView`. */
+type ITableCellProps =
+  | (React.ComponentProps<typeof View> & { useRNView: true })
+  | (React.ComponentProps<typeof Text> & { useRNView?: false });
+type ITableHeadProps = ITableCellProps;
+type ITableDataProps = ITableCellProps;
 
-const Table = React.forwardRef<
-  React.ComponentRef<typeof ExpoTable>,
-  ITableProps
->(({ className, ...props }, ref) => {
-  return (
-    <ExpoTable
-      ref={ref}
-      className={tableStyle({ class: className })}
-      {...props}
-    />
-  );
-});
+function Table({ className, ...props }: ITableProps) {
+  return <ExpoTable className={tableStyle({ class: className })} {...props} />;
+}
 
-const TableHeader = React.forwardRef<
-  React.ComponentRef<typeof ExpoTHead>,
-  ITableHeaderProps
->(function TableHeader({ className, ...props }, ref) {
+function TableHeader({ className, ...props }: ITableHeaderProps) {
   const contextValue = useMemo(() => {
     return {
       isHeaderRow: true,
@@ -68,32 +59,16 @@ const TableHeader = React.forwardRef<
   }, []);
   return (
     <TableHeaderContext.Provider value={contextValue}>
-      <ExpoTHead
-        ref={ref}
-        className={tableHeaderStyle({ class: className })}
-        {...props}
-      />
+      <ExpoTHead className={tableHeaderStyle({ class: className })} {...props} />
     </TableHeaderContext.Provider>
   );
-});
+}
 
-const TableBody = React.forwardRef<
-  React.ComponentRef<typeof ExpoTBody>,
-  ITableBodyProps
->(function TableBody({ className, ...props }, ref) {
-  return (
-    <ExpoTBody
-      ref={ref}
-      className={tableBodyStyle({ class: className })}
-      {...props}
-    />
-  );
-});
+function TableBody({ className, ...props }: ITableBodyProps) {
+  return <ExpoTBody className={tableBodyStyle({ class: className })} {...props} />;
+}
 
-const TableFooter = React.forwardRef<
-  React.ComponentRef<typeof ExpoTFoot>,
-  ITableFooterProps
->(function TableFooter({ className, ...props }, ref) {
+function TableFooter({ className, ...props }: ITableFooterProps) {
   const contextValue = useMemo(() => {
     return {
       isFooterRow: true,
@@ -101,48 +76,26 @@ const TableFooter = React.forwardRef<
   }, []);
   return (
     <TableFooterContext.Provider value={contextValue}>
-      <ExpoTFoot
-        ref={ref}
-        className={tableFooterStyle({ class: className })}
-        {...props}
-      />
+      <ExpoTFoot className={tableFooterStyle({ class: className })} {...props} />
     </TableFooterContext.Provider>
   );
-});
+}
 
-const TableHead = React.forwardRef<
-  React.ComponentRef<typeof View | typeof Text>,
-  ITableHeadProps
->(function TableHead({ useRNView = false, className, ...props }, ref) {
-  if (useRNView) {
-    return (
-      <View
-        ref={ref}
-        className={tableHeadStyle({ class: className })}
-        {...props}
-      />
-    );
-  } else {
-    return (
-      <Text
-        ref={ref}
-        className={tableHeadStyle({ class: className })}
-        {...props}
-      />
-    );
+function TableHead(cellProps: ITableHeadProps) {
+  if (cellProps.useRNView) {
+    const { useRNView: _view, className, ...props } = cellProps;
+    return <View className={tableHeadStyle({ class: className })} {...props} />;
   }
-});
+  const { useRNView: _text, className, ...props } = cellProps;
+  return <Text className={tableHeadStyle({ class: className })} {...props} />;
+}
 
-const TableRow = React.forwardRef<
-  React.ComponentRef<typeof ExpoTR>,
-  ITableRowProps
->(function TableRow({ className, ...props }, ref) {
+function TableRow({ className, ...props }: ITableRowProps) {
   const { isHeaderRow } = useContext(TableHeaderContext);
   const { isFooterRow } = useContext(TableFooterContext);
 
   return (
     <ExpoTR
-      ref={ref}
       className={tableRowStyleStyle({
         isHeaderRow,
         isFooterRow,
@@ -151,43 +104,20 @@ const TableRow = React.forwardRef<
       {...props}
     />
   );
-});
+}
 
-const TableData = React.forwardRef<
-  React.ComponentRef<typeof View | typeof Text>,
-  ITableDataProps
->(function TableData({ useRNView = false, className, ...props }, ref) {
-  if (useRNView) {
-    return (
-      <View
-        ref={ref}
-        className={tableDataStyle({ class: className })}
-        {...props}
-      />
-    );
-  } else {
-    return (
-      <Text
-        ref={ref}
-        className={tableDataStyle({ class: className })}
-        {...props}
-      />
-    );
+function TableData(cellProps: ITableDataProps) {
+  if (cellProps.useRNView) {
+    const { useRNView: _view, className, ...props } = cellProps;
+    return <View className={tableDataStyle({ class: className })} {...props} />;
   }
-});
+  const { useRNView: _text, className, ...props } = cellProps;
+  return <Text className={tableDataStyle({ class: className })} {...props} />;
+}
 
-const TableCaption = React.forwardRef<
-  React.ComponentRef<typeof ExpoTCaption>,
-  ITableCaptionProps
->(({ className, ...props }, ref) => {
-  return (
-    <ExpoTCaption
-      ref={ref}
-      className={tableCaptionStyle({ class: className })}
-      {...props}
-    />
-  );
-});
+function TableCaption({ className, ...props }: ITableCaptionProps) {
+  return <ExpoTCaption className={tableCaptionStyle({ class: className })} {...props} />;
+}
 
 Table.displayName = 'Table';
 TableHeader.displayName = 'TableHeader';

@@ -41,7 +41,9 @@ export function GluestackUIProvider({
   setFlushStyles(cssVariablesWithMode);
 
   const handleMediaQuery = React.useCallback((e: MediaQueryListEvent) => {
-    script(e.matches ? 'dark' : 'light');
+    // script() takes no argument: the template is light-only, so it always sets light.
+    void e;
+    script();
   }, []);
 
   useSafeLayoutEffect(() => {

@@ -43,7 +43,7 @@ const bottomSheetItemStyle = tva({
 
 const BottomSheetContext = createContext<{
   visible: boolean;
-  bottomSheetRef: React.RefObject<GorhomBottomSheet>;
+  bottomSheetRef: React.RefObject<GorhomBottomSheet | null>;
   handleClose: () => void;
   handleOpen: () => void;
 }>({
@@ -204,9 +204,11 @@ type IBottomSheetContent = React.ComponentProps<typeof GorhomBottomSheetView>;
 
 export const BottomSheetContent = ({ ...props }: IBottomSheetContent) => {
   const { handleClose, visible } = useContext(BottomSheetContext);
-  const keyDownHandlers = useMemo(() => {
+  // Web only: React Native Web hands a DOM KeyboardEvent to onKeyDown, which
+  // React Native 0.88's strict types do not model — hence the cast below.
+  const keyDownHandlers = useMemo((): Partial<IBottomSheetContent> => {
     return Platform.OS === 'web'
-      ? {
+      ? ({
           onKeyDown: (e: React.KeyboardEvent) => {
             if (e.key === 'Escape') {
               e.preventDefault();
@@ -214,7 +216,7 @@ export const BottomSheetContent = ({ ...props }: IBottomSheetContent) => {
               return;
             }
           },
-        }
+        } as unknown as Partial<IBottomSheetContent>)
       : {};
   }, [handleClose]);
 
@@ -222,7 +224,6 @@ export const BottomSheetContent = ({ ...props }: IBottomSheetContent) => {
     return (
       <GorhomBottomSheetView
         {...props}
-        // @ts-ignore
         {...keyDownHandlers}
         className={bottomSheetContentStyle({
           className: props.className,
@@ -239,7 +240,6 @@ export const BottomSheetContent = ({ ...props }: IBottomSheetContent) => {
   return (
     <GorhomBottomSheetView
       {...props}
-      // @ts-ignore
       {...keyDownHandlers}
       className={bottomSheetContentStyle({
         className: props.className,
