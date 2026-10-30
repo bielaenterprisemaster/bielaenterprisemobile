@@ -1,0 +1,15 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "podspecPath": "./ExpoGL.podspec",
+    "modules": ["ExpoGLModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.gl.GLModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.gl",
+      "repository": "local-maven-repo"
+    }
+  }
+}
